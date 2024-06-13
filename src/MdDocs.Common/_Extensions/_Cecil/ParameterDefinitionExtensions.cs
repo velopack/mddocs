@@ -28,10 +28,10 @@ namespace Grynwald.MdDocs.Common
                     if (attribute.AttributeType.FullName == SystemTypeNames.ParamArrayAttributeFullName)
                         return false;
 
-                    if (!attribute.AttributeType.Resolve().IsPublic)
-                        return false;
+                    if (attribute.AttributeType.Resolve()?.IsPublic == true)
+                        return true;
 
-                    return true;
+                    return false;
                 });
         }
     }

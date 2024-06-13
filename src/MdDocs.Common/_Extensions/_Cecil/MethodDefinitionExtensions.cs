@@ -24,10 +24,10 @@ namespace Grynwald.MdDocs.Common
                     if (attribute.AttributeType.FullName == SystemTypeNames.ExtensionAttributeFullName)
                         return false;
 
-                    if (!attribute.AttributeType.Resolve().IsPublic)
-                        return false;
+                    if (attribute.AttributeType.Resolve()?.IsPublic == true)
+                        return true;
 
-                    return true;
+                    return false;
                 });
         }
     }

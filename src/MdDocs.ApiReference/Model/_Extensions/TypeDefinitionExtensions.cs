@@ -108,11 +108,10 @@ namespace Grynwald.MdDocs.ApiReference.Model
                     if (typeKind == TypeKind.Struct && attribute.AttributeType.FullName == SystemTypeNames.IsReadOnlyAttributeFullName)
                         return false;
 
-                    if (!attribute.AttributeType.Resolve().IsPublic)
-                        return false;
+                    if (attribute.AttributeType.Resolve()?.IsPublic == true)
+                        return true;
 
-
-                    return true;
+                    return false;
                 });
         }
 

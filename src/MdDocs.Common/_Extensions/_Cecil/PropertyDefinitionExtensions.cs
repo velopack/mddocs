@@ -20,10 +20,10 @@ namespace Grynwald.MdDocs.Common
             return parameter.CustomAttributes
                 .Where(attribute =>
                 {
-                    if (!attribute.AttributeType.Resolve().IsPublic)
-                        return false;
+                    if (attribute.AttributeType.Resolve()?.IsPublic == true)
+                        return true;
 
-                    return true;
+                    return false;
                 });
         }
     }
