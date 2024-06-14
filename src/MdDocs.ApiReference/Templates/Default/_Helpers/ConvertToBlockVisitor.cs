@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata.Ecma335;
 using Grynwald.MarkdownGenerator;
 using Grynwald.MdDocs.ApiReference.Model.XmlDocs;
 
@@ -22,7 +23,7 @@ namespace Grynwald.MdDocs.ApiReference.Templates.Default
         public MdContainerBlock Result { get; }
 
         /// <summary>
-        /// Gets the markdown block currently being appended to 
+        /// Gets the markdown block currently being appended to
         /// </summary>
         private MdContainerBlockBase CurrentBlock => m_Blocks.Peek();
 
@@ -58,6 +59,15 @@ namespace Grynwald.MdDocs.ApiReference.Templates.Default
         }
 
         public void Visit(TextElement element) => AddToCurrentParagraph(new MdTextSpan(element.Content));
+
+        public void Visit(BoldElement element)
+        {
+            if (!element.Content.IsEmpty)
+            {
+                var text = TextBlockToMarkdownConverter.ConvertToSpan(element.Content, m_SpanFactory);
+                AddToCurrentParagraph(new MdStrongEmphasisSpan(text));
+            }
+        }
 
         public void Visit(SeeElement element)
         {

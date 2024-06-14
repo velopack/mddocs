@@ -16,6 +16,8 @@
 
         void Visit(TextElement element);
 
+        void Visit(BoldElement element);
+
         void Visit(SeeElement element);
 
         void Visit(TextBlock textBlock);

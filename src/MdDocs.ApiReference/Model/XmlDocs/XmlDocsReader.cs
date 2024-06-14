@@ -206,7 +206,7 @@ namespace Grynwald.MdDocs.ApiReference.Model.XmlDocs
 
                     // ignore unknown elements
                     default:
-                        m_Logger.LogWarning($"Encountered unknown element '{elementName}'. Element will be ignored.");
+                        m_Logger.LogWarning($"Encountered unknown element in member '{elementName}'. Element will be ignored.");
                         break;
                 }
             }
@@ -281,6 +281,20 @@ namespace Grynwald.MdDocs.ApiReference.Model.XmlDocs
                                 element = new CElement(elementNode.Value);
                                 break;
 
+                            case "b":
+                                element = new BoldElement(ReadTextBlock(elementNode));
+                                break;
+
+                            case "a":
+                                if (elementNode.TryGetAttributeValue("href", out var linkHref))
+                                {
+                                    if (Uri.TryCreate(linkHref, UriKind.Absolute, out var target))
+                                    {
+                                        element = new SeeElement(target, ReadTextBlock(elementNode));
+                                    }
+                                }
+                                break;
+
                             case "see":
                                 // <see /> allows adding links to the documentation
                                 //
@@ -313,7 +327,7 @@ namespace Grynwald.MdDocs.ApiReference.Model.XmlDocs
 
                             // ignore unknown elements
                             default:
-                                m_Logger.LogWarning($"Encountered unknown element '{elementNode.Name}'. Element will be ignored.");
+                                m_Logger.LogWarning($"Encountered unknown element in text block '{elementNode.Name}'. Element will be ignored.");
                                 break;
                         }
                         break;
@@ -451,8 +465,8 @@ namespace Grynwald.MdDocs.ApiReference.Model.XmlDocs
             if (lines.Count == 0)
                 return String.Empty;
 
-            // Indent in generated XML doc files is greater than 4 always. 
-            // This allows us to optimize the case where the author actually placed 
+            // Indent in generated XML doc files is greater than 4 always.
+            // This allows us to optimize the case where the author actually placed
             // whitespace inline in between tags.
             if (indent <= 4 && !String.IsNullOrEmpty(lines[0]) && lines[0][0] != '\t')
                 indent = 0;
@@ -477,13 +491,13 @@ namespace Grynwald.MdDocs.ApiReference.Model.XmlDocs
         /// </summary>
         private static int? DetermineIndentation(string content)
         {
-            //  When inline documentation is written to a XML file by the compiler, 
+            //  When inline documentation is written to a XML file by the compiler,
             //  all text is indented by the same number of character:
             //
             //  Entire block is indented
             //    │
-            //    │    <member name="F:DemoProject.DemoClass.Field1">             Empty leading line  
-            //    │       <remarks>                                         <───────┘                        
+            //    │    <member name="F:DemoProject.DemoClass.Field1">             Empty leading line
+            //    │       <remarks>                                         <───────┘
             //    └───>     Remarks allow specification of more detailed information about a member, in this case a field
             //              supplementing the information specified in the summary
             //  ┌───>     </remarks>
@@ -493,10 +507,10 @@ namespace Grynwald.MdDocs.ApiReference.Model.XmlDocs
             //  Empty trailing line
             //
             //  In order to properly render the documentation, the leading whitespace
-            //  needs to be removed. 
-            //  
+            //  needs to be removed.
+            //
             //  This methods determines the number of character that have to be removed
-            //  from all lines by 
+            //  from all lines by
             //    - removing the first line (probably only whitespace, as can be seen in the example above)
             //    - removing the last line (probably only whitespace, as can be seen in the example above)
             //    - counting the number of whitespace characters in the first non-whitespace line
@@ -521,9 +535,9 @@ namespace Grynwald.MdDocs.ApiReference.Model.XmlDocs
             if (lines.Count == 0)
                 return null;
 
-            // The indent of the first line of content determines the base 
-            // indent for all the lines, which we should remove since it's just 
-            // a doc gen artifact.            
+            // The indent of the first line of content determines the base
+            // indent for all the lines, which we should remove since it's just
+            // a doc gen artifact.
             return lines[0].TakeWhile(c => Char.IsWhiteSpace(c)).Count();
 
         }

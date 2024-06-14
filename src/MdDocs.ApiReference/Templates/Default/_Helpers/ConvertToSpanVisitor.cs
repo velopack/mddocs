@@ -39,6 +39,15 @@ namespace Grynwald.MdDocs.ApiReference.Templates.Default
 
         public void Visit(TextElement element) => Result.Add(new MdTextSpan(element.Content));
 
+        public void Visit(BoldElement element)
+        {
+            if (!element.Content.IsEmpty)
+            {
+                var text = TextBlockToMarkdownConverter.ConvertToSpan(element.Content, m_SpanFactory);
+                Result.Add(new MdStrongEmphasisSpan(text));
+            }
+        }
+
         public void Visit(SeeElement element)
         {
             MdSpan span;
